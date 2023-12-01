@@ -1,0 +1,8 @@
+package bot.multifunction.model.steps;
+
+public enum Steps {
+CREATING_ONCE_REMINDER,
+  CREATING_EVERYDAY_REMINDER,
+  CREATING_EVEN_DAYS_REMINDER,
+  CREATING_ODD_DAYS_REMINDER;
+}
