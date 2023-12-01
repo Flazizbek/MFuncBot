@@ -20,10 +20,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class TextHandler {
-   static Pattern pattern = Pattern.compile("\\d{2}-\\d{2}-\\d{4} \\d{2}:\\d{2}:\\d{2}");
-   static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-        static  LocalDate currentDate = LocalDate.now();
-         static  DayOfWeek currentDayOfWeek = currentDate.getDayOfWeek();
+    static Pattern pattern = Pattern.compile("\\d{2}-\\d{2}-\\d{4} \\d{2}:\\d{2}:\\d{2}");
+    static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+    static  LocalDate currentDate = LocalDate.now();
+    static  DayOfWeek currentDayOfWeek = currentDate.getDayOfWeek();
     public static void handle(Message message, TelegramLongPollingBot bot) {
         if(UserRepo.USER_STEP.get(message.getChatId())== Steps.CREATING_ONCE_REMINDER){
             creatingReminder(message,bot,1_000_000);
@@ -38,43 +38,27 @@ public class TextHandler {
     }
 
     private static void creatingReminder(Message message, TelegramLongPollingBot bot, long period) {
-        Matcher matcher = pattern.matcher(message.getText());
-        Pattern text = Pattern.compile("(.+)");
-        Matcher matcher1 = text.matcher(message.getText());
-        String remindText;
-        if (matcher1.find()) {
-            remindText=matcher1.group();
-        } else {
-            remindText = "Text not found";
-        }
+        Matcher matcher = pattern.matcher(UserRepo.DATE_COLLECTOR.get(message.getChatId()));
         long seconds=0;
         if(matcher.find()) {
-                TemporalAccessor accessor = formatter.parse(matcher.group());
-                LocalDateTime from = LocalDateTime.from(accessor);
-                Duration between = Duration.between(LocalDateTime.now(), from);
-                seconds = between.toSeconds();
-                ScheduledExecutorService executor;
-                executor = Executors.newScheduledThreadPool(4);
-                executor.scheduleAtFixedRate(() -> {
-                    try {
-                        bot.execute(new SendMessage(message.getChatId().toString(), "You have one reminder : " + remindText));
-                    } catch (TelegramApiException e) {
-                        throw new RuntimeException(e);
-                    }
-                }, seconds, 3600 * period, TimeUnit.SECONDS);
-            }
+            TemporalAccessor accessor = formatter.parse(matcher.group());
+            LocalDateTime from = LocalDateTime.from(accessor);
+            Duration between = Duration.between(LocalDateTime.now(), from);
+            seconds = between.toSeconds();
+            ScheduledExecutorService executor;
+            executor = Executors.newScheduledThreadPool(4);
+            executor.scheduleAtFixedRate(() -> {
+                try {
+                    bot.execute(new SendMessage(message.getChatId().toString(), "You have one reminder : " + message.getText()));
+                } catch (TelegramApiException e) {
+                    throw new RuntimeException(e);
+                }
+            }, seconds, 3600 * period, TimeUnit.SECONDS);
+        }
     }
 
     private static void creatingEvenReminder(Message message, TelegramLongPollingBot bot, long period) {
-        Matcher matcher = pattern.matcher(message.getText());
-        Pattern text = Pattern.compile("(.+)");
-        Matcher matcher1 = text.matcher(message.getText());
-        String remindText;
-        if (matcher1.find()) {
-            remindText=matcher1.group();
-        } else {
-            remindText = "Text not found";
-        }
+        Matcher matcher = pattern.matcher(UserRepo.DATE_COLLECTOR.get(message.getChatId()));
         long seconds=0;
         if(matcher.find()) {
             if (currentDayOfWeek == DayOfWeek.TUESDAY || currentDayOfWeek == DayOfWeek.THURSDAY || currentDayOfWeek == DayOfWeek.SATURDAY) {
@@ -86,7 +70,7 @@ public class TextHandler {
                 executor = Executors.newScheduledThreadPool(4);
                 executor.scheduleAtFixedRate(() -> {
                     try {
-                        bot.execute(new SendMessage(message.getChatId().toString(), "You have one reminder : " + remindText));
+                        bot.execute(new SendMessage(message.getChatId().toString(), "You have one reminder : " + message.getText()));
                     } catch (TelegramApiException e) {
                         throw new RuntimeException(e);
                     }
@@ -97,15 +81,7 @@ public class TextHandler {
 
 
     public static void creatingOddReminder(Message message, TelegramLongPollingBot bot, long period) {
-        Matcher matcher = pattern.matcher(message.getText());
-        Pattern text = Pattern.compile("(.+)");
-        Matcher matcher1 = text.matcher(message.getText());
-        String remindText;
-        if (matcher1.find()) {
-            remindText=matcher1.group();
-        } else {
-            remindText = "Text not found";
-        }
+        Matcher matcher = pattern.matcher(UserRepo.DATE_COLLECTOR.get(message.getChatId()));
         long seconds=0;
         if(matcher.find()) {
             if (currentDayOfWeek == DayOfWeek.MONDAY || currentDayOfWeek == DayOfWeek.WEDNESDAY || currentDayOfWeek == DayOfWeek.FRIDAY) {
@@ -118,7 +94,7 @@ public class TextHandler {
                 executor = Executors.newScheduledThreadPool(4);
                 executor.scheduleAtFixedRate(() -> {
                     try {
-                        bot.execute(new SendMessage(message.getChatId().toString(), "You have one reminder : " + remindText));
+                        bot.execute(new SendMessage(message.getChatId().toString(), "You have one reminder : " + message.getText()));
                     } catch (TelegramApiException e) {
                         throw new RuntimeException(e);
                     }

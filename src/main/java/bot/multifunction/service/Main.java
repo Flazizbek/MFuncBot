@@ -17,6 +17,3 @@ public class Main
             api.registerBot(bot);
     }
 }
-/*
-* TODO edit commands start and help
-* */

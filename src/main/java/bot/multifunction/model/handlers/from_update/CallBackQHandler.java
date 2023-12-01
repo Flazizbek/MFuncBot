@@ -1,6 +1,7 @@
 package bot.multifunction.model.handlers.from_update;
 
 
+import bot.multifunction.model.DateManager;
 import bot.multifunction.model.TimeManager;
 import bot.multifunction.model.Users.UserRepo;
 import bot.multifunction.model.button.ButtonUtil;
@@ -9,12 +10,14 @@ import bot.multifunction.model.vocabluary.Reader;
 import bot.multifunction.model.vocabluary.VocabSwitchInfo;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Stack;
 
 public class CallBackQHandler {
 
@@ -29,154 +32,71 @@ public class CallBackQHandler {
             case "odd" -> createOddReminder(callbackQuery, bot);
             case "cansel" ->
                     bot.execute(new SendMessage(callbackQuery.getMessage().getChatId().toString(), "Cancelled"));
-            case "hour_increment" -> hourIncrement(callbackQuery, bot);
-            case "hour_decrement" -> hourDecrement(callbackQuery, bot);
-            case "minute_increment" -> minuteIncrement(callbackQuery, bot);
-            case "minute_decrement" -> minuteDecrement(callbackQuery, bot);
-            case "apply" -> applyCallBack(callbackQuery, bot);
+            case "hour_increment" -> TimeManager.hourIncrement(callbackQuery, bot);
+            case "hour_decrement" -> TimeManager.hourDecrement(callbackQuery, bot);
+            case "minute_increment" -> TimeManager.minuteIncrement(callbackQuery, bot);
+            case "minute_decrement" -> TimeManager.minuteDecrement(callbackQuery, bot);
+            case "apply_time" -> applyTimeCallBack(callbackQuery, bot);
+            case "month_increment" -> DateManager.monthIncrement(callbackQuery, bot);
+            case "month_decrement" -> DateManager.monthDecrement(callbackQuery, bot);
+            case "day_increment" -> DateManager.dayIncrement(callbackQuery, bot);
+            case "day_decrement" -> DateManager.dayDecrement(callbackQuery, bot);
+            case "apply_day" -> applyDateCallBack(callbackQuery, bot);
         }
     }
 
-    private static void applyCallBack(CallbackQuery callbackQuery, TelegramLongPollingBot bot) {
-
-    }
-
-    private static void minuteDecrement(CallbackQuery callbackQuery, TelegramLongPollingBot bot) throws TelegramApiException {
+    private static void applyDateCallBack(CallbackQuery callbackQuery, TelegramLongPollingBot bot) throws TelegramApiException {
         Long chatId = callbackQuery.getMessage().getChatId();
-        if (!UserRepo.REMINDER_TIME.containsKey(chatId)) {
-            UserRepo.REMINDER_TIME.put(chatId, new TimeManager());
-        }
-        TimeManager timeManager = UserRepo.REMINDER_TIME.get(chatId);
+        DateManager dateManager = UserRepo.DATE.get(chatId);
+        int month = dateManager.getMonth();
+        int day = dateManager.getDay();
+        String monthString = (month < 10) ? "0" + month : String.valueOf(month);
+        String dayeString = (day < 10) ? "0" + day : String.valueOf(day);
+        String result = monthString+":"+dayeString+":2023";
+        UserRepo.DATE_COLLECTOR.put(chatId,result);
+        dateManager.setMonth(0);
+        dateManager.setDay(0);
+        SendMessage sendMessage = new SendMessage(chatId.toString(), "Select time.");
+        sendMessage.setReplyMarkup(ButtonUtil.DayButton(chatId));
+        bot.execute(sendMessage);
 
-        if (timeManager.getMinute() != 0) {
-            timeManager.setMinute(timeManager.getMinute() - 2);
-            InlineKeyboardMarkup markup = ButtonUtil.Increment(chatId);
-            EditMessageReplyMarkup editMessageReplyMarkup = EditMessageReplyMarkup.builder()
-                    .replyMarkup(markup)
-                    .chatId(callbackQuery.getMessage().getChatId())
-                    .messageId(callbackQuery.getMessage().getMessageId())
-                    .build();
-            bot.execute(editMessageReplyMarkup);
-        } else {
-            timeManager.setMinute(58);
-            if (timeManager.getHour() == 0) {
-                timeManager.setHour(23);
-            } else {
-                timeManager.setHour(timeManager.getHour() - 1);
-            }
-            InlineKeyboardMarkup markup = ButtonUtil.Increment(chatId);
-            EditMessageReplyMarkup editMessageReplyMarkup = EditMessageReplyMarkup.builder()
-                    .replyMarkup(markup)
-                    .chatId(callbackQuery.getMessage().getChatId())
-                    .messageId(callbackQuery.getMessage().getMessageId())
-                    .build();
-            bot.execute(editMessageReplyMarkup);
-        }
     }
 
-    private static void minuteIncrement(CallbackQuery callbackQuery, TelegramLongPollingBot bot) throws TelegramApiException {
+
+    private static void applyTimeCallBack(CallbackQuery callbackQuery, TelegramLongPollingBot bot) throws TelegramApiException {
         Long chatId = callbackQuery.getMessage().getChatId();
-        if (!UserRepo.REMINDER_TIME.containsKey(chatId)) {
-            UserRepo.REMINDER_TIME.put(chatId, new TimeManager());
-        }
-        TimeManager timeManager = UserRepo.REMINDER_TIME.get(chatId);
+        TimeManager timeManager = UserRepo.TIME.get(chatId);
+        int hour = timeManager.getHour();
+        int minute = timeManager.getMinute();
+        String hourString = (hour < 10) ? "0" + hour : String.valueOf(hour);
+        String minuteString = (minute < 10) ? "0" + minute : String.valueOf(minute);
+        String result = hour+":"+minute+":00";
+        UserRepo.DATE_COLLECTOR.put(chatId, UserRepo.DATE_COLLECTOR.get(chatId)+" "+result);
+        timeManager.setHour(0);
+        timeManager.setMinute(0);
+        bot.execute(new SendMessage(chatId.toString(),"Enter text for reminder"));
 
-        if (timeManager.getMinute() < 60) {
-            timeManager.setMinute(timeManager.getMinute() + 2);
-            InlineKeyboardMarkup markup = ButtonUtil.Increment(chatId);
-            EditMessageReplyMarkup editMessageReplyMarkup = EditMessageReplyMarkup.builder()
-                    .replyMarkup(markup)
-                    .chatId(callbackQuery.getMessage().getChatId())
-                    .messageId(callbackQuery.getMessage().getMessageId())
-                    .build();
-            bot.execute(editMessageReplyMarkup);
-        } else {
-            timeManager.setMinute(0);
 
-            InlineKeyboardMarkup markup = ButtonUtil.Increment(chatId);
-            EditMessageReplyMarkup editMessageReplyMarkup = EditMessageReplyMarkup.builder()
-                    .replyMarkup(markup)
-                    .chatId(callbackQuery.getMessage().getChatId())
-                    .messageId(callbackQuery.getMessage().getMessageId())
-                    .build();
-            bot.execute(editMessageReplyMarkup);
-        }
     }
-
-
-    private static void hourDecrement(CallbackQuery callbackQuery, TelegramLongPollingBot bot) throws TelegramApiException {
-        Long chatId = callbackQuery.getMessage().getChatId();
-        if (!UserRepo.REMINDER_TIME.containsKey(chatId)) {
-            UserRepo.REMINDER_TIME.put(chatId, new TimeManager());
-        }
-        TimeManager timeManager = UserRepo.REMINDER_TIME.get(chatId);
-
-        if (timeManager.getHour() != 0) {
-            timeManager.setHour(timeManager.getHour() - 1);
-            InlineKeyboardMarkup markup = ButtonUtil.Increment(chatId);
-            EditMessageReplyMarkup editMessageReplyMarkup = EditMessageReplyMarkup.builder()
-                    .replyMarkup(markup)
-                    .chatId(callbackQuery.getMessage().getChatId())
-                    .messageId(callbackQuery.getMessage().getMessageId())
-                    .build();
-            bot.execute(editMessageReplyMarkup);
-        } else {
-            timeManager.setHour(23);
-            InlineKeyboardMarkup markup = ButtonUtil.Increment(chatId);
-            EditMessageReplyMarkup editMessageReplyMarkup = EditMessageReplyMarkup.builder()
-                    .replyMarkup(markup)
-                    .chatId(callbackQuery.getMessage().getChatId())
-                    .messageId(callbackQuery.getMessage().getMessageId())
-                    .build();
-            bot.execute(editMessageReplyMarkup);
-        }
-    }
-
-
-    private static void hourIncrement(CallbackQuery callbackQuery, TelegramLongPollingBot bot) throws TelegramApiException {
-        Long chatId = callbackQuery.getMessage().getChatId();
-        if (!UserRepo.REMINDER_TIME.containsKey(chatId)) {
-            UserRepo.REMINDER_TIME.put(chatId, new TimeManager());
-        }
-        TimeManager timeManager = UserRepo.REMINDER_TIME.get(chatId);
-
-        if (timeManager.getHour() != 23) {
-            timeManager.setHour(timeManager.getHour() + 1);
-            InlineKeyboardMarkup markup = ButtonUtil.Increment(chatId);
-            EditMessageReplyMarkup editMessageReplyMarkup = EditMessageReplyMarkup.builder()
-                    .replyMarkup(markup)
-                    .chatId(callbackQuery.getMessage().getChatId())
-                    .messageId(callbackQuery.getMessage().getMessageId())
-                    .build();
-            bot.execute(editMessageReplyMarkup);
-        } else {
-            timeManager.setHour(0);
-            InlineKeyboardMarkup markup = ButtonUtil.Increment(chatId);
-            EditMessageReplyMarkup editMessageReplyMarkup = EditMessageReplyMarkup.builder()
-                    .replyMarkup(markup)
-                    .chatId(callbackQuery.getMessage().getChatId())
-                    .messageId(callbackQuery.getMessage().getMessageId())
-                    .build();
-            bot.execute(editMessageReplyMarkup);
-        }
-    }
-
 
     private static void createOddReminder(CallbackQuery callbackQuery, TelegramLongPollingBot bot) throws TelegramApiException {
-        bot.execute(new SendMessage(callbackQuery.getMessage().getChatId().toString(),
-                "Enter date, time and text (pattern: dd-MM-yyyy HH:mm:ss ( reminder text ) ) "));
+        SendMessage sendMessage = new SendMessage(callbackQuery.getMessage().getChatId().toString(), "Select time.");
+        sendMessage.setReplyMarkup(ButtonUtil.TimeIncrement(callbackQuery.getMessage().getChatId()));
+        bot.execute(sendMessage);
         UserRepo.USER_STEP.put(callbackQuery.getMessage().getChatId(), Steps.CREATING_ODD_DAYS_REMINDER);
     }
 
     private static void createEvenReminder(CallbackQuery callbackQuery, TelegramLongPollingBot bot) throws TelegramApiException {
-        bot.execute(new SendMessage(callbackQuery.getMessage().getChatId().toString(),
-                "Enter date, time and text (pattern: dd-MM-yyyy HH:mm:ss ( reminder text ) ) "));
+        SendMessage sendMessage = new SendMessage(callbackQuery.getMessage().getChatId().toString(), "Select time.");
+        sendMessage.setReplyMarkup(ButtonUtil.TimeIncrement(callbackQuery.getMessage().getChatId()));
+        bot.execute(sendMessage);
         UserRepo.USER_STEP.put(callbackQuery.getMessage().getChatId(), Steps.CREATING_EVEN_DAYS_REMINDER);
     }
 
     private static void createEveryReminder(CallbackQuery callbackQuery, TelegramLongPollingBot bot) throws TelegramApiException {
-        bot.execute(new SendMessage(callbackQuery.getMessage().getChatId().toString(),
-                "Enter date, time and text (pattern: dd-MM-yyyy HH:mm:ss ( reminder text ) ) "));
+        SendMessage sendMessage = new SendMessage(callbackQuery.getMessage().getChatId().toString(), "Select time.");
+        sendMessage.setReplyMarkup(ButtonUtil.TimeIncrement(callbackQuery.getMessage().getChatId()));
+        bot.execute(sendMessage);
         UserRepo.USER_STEP.put(callbackQuery.getMessage().getChatId(), Steps.CREATING_EVERYDAY_REMINDER);
     }
 
@@ -203,8 +123,8 @@ public class CallBackQHandler {
     }
 
     private static void createOnceReminder(CallbackQuery callbackQuery, TelegramLongPollingBot bot) throws TelegramApiException {
-        SendMessage sendMessage = new SendMessage(callbackQuery.getMessage().getChatId().toString(), "Select time.");
-        sendMessage.setReplyMarkup(ButtonUtil.Increment(callbackQuery.getMessage().getChatId()));
+        SendMessage sendMessage = new SendMessage(callbackQuery.getMessage().getChatId().toString(), "Select date(mm:dd).");
+        sendMessage.setReplyMarkup(ButtonUtil.DayButton(callbackQuery.getMessage().getChatId()));
         bot.execute(sendMessage);
         UserRepo.USER_STEP.put(callbackQuery.getMessage().getChatId(), Steps.CREATING_ONCE_REMINDER);
     }
