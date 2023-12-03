@@ -58,54 +58,61 @@ public class TextHandler {
                 } catch (TelegramApiException e) {
                     throw new RuntimeException(e);
                 }
-            }, seconds, 60 * 5, TimeUnit.SECONDS);
+            }, seconds, 3600*period, TimeUnit.SECONDS);
         }
     }
 
 
     private static void creatingEvenReminder(Message message, TelegramLongPollingBot bot, long period) {
-        Matcher matcher = pattern.matcher(UserRepo.DATE_COLLECTOR.get(message.getChatId()));
-        long seconds=0;
-        if(matcher.find()) {
-            if (currentDayOfWeek == DayOfWeek.TUESDAY || currentDayOfWeek == DayOfWeek.THURSDAY || currentDayOfWeek == DayOfWeek.SATURDAY) {
-                TemporalAccessor accessor = formatter.parse(matcher.group());
-                LocalDateTime from = LocalDateTime.from(accessor);
-                Duration between = Duration.between(LocalDateTime.now(), from);
-                seconds = between.toSeconds();
-                ScheduledExecutorService executor;
-                executor = Executors.newScheduledThreadPool(4);
-                executor.scheduleAtFixedRate(() -> {
-                    try {
-                        bot.execute(new SendMessage(message.getChatId().toString(), "You have one reminder : " + message.getText()));
-                    } catch (TelegramApiException e) {
-                        throw new RuntimeException(e);
-                    }
-                }, seconds, 3600 * period, TimeUnit.SECONDS);
+            String time = UserRepo.DATE_COLLECTOR.get(message.getChatId());
+            Pattern pattern = Pattern.compile("(\\d{2}/\\d{2}/\\d{4} \\d{2}:\\d{2}:\\d{2})");
+            Matcher matcher = pattern.matcher(time);
+            long seconds = 0;
+            if (matcher.find()) {
+                if (currentDayOfWeek == DayOfWeek.TUESDAY || currentDayOfWeek == DayOfWeek.THURSDAY || currentDayOfWeek == DayOfWeek.SATURDAY) {
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss");
+                    TemporalAccessor accessor = formatter.parse(matcher.group());
+                    System.out.printf(matcher.group());
+                    LocalDateTime from = LocalDateTime.from(accessor);
+                    Duration between = Duration.between(LocalDateTime.now(), from);
+                    seconds = between.toSeconds();
+                    ScheduledExecutorService executor;
+                    executor = Executors.newScheduledThreadPool(4);
+                    executor.scheduleAtFixedRate(() -> {
+                        try {
+                            bot.execute(new SendMessage(message.getChatId().toString(), "You have reminder : " + message.getText()));
+                        } catch (TelegramApiException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }, seconds, 3600 * period, TimeUnit.SECONDS);
+                }
             }
-        }
     }
 
-
     public static void creatingOddReminder(Message message, TelegramLongPollingBot bot, long period) {
-        Matcher matcher = pattern.matcher(UserRepo.DATE_COLLECTOR.get(message.getChatId()));
-        long seconds=0;
-        if(matcher.find()) {
-            if (currentDayOfWeek == DayOfWeek.MONDAY || currentDayOfWeek == DayOfWeek.WEDNESDAY || currentDayOfWeek == DayOfWeek.FRIDAY) {
-                TemporalAccessor accessor = formatter.parse(matcher.group());
-                LocalDateTime from = LocalDateTime.from(accessor);
-                Duration between = Duration.between(LocalDateTime.now(), from);
-                seconds = between.toSeconds();
-                ScheduledExecutorService executor;
-                executor = Executors.newScheduledThreadPool(4);
-                executor.scheduleAtFixedRate(() -> {
-                    try {
-                        bot.execute(new SendMessage(message.getChatId().toString(), "You have one reminder : " + message.getText()));
-                    } catch (TelegramApiException e) {
-                        throw new RuntimeException(e);
-                    }
-                }, seconds, 3600 * period, TimeUnit.SECONDS);
+            String time = UserRepo.DATE_COLLECTOR.get(message.getChatId());
+            Pattern pattern = Pattern.compile("(\\d{2}/\\d{2}/\\d{4} \\d{2}:\\d{2}:\\d{2})");
+            Matcher matcher = pattern.matcher(time);
+            long seconds = 0;
+            if (matcher.find()) {
+                if (currentDayOfWeek == DayOfWeek.MONDAY || currentDayOfWeek == DayOfWeek.WEDNESDAY || currentDayOfWeek == DayOfWeek.FRIDAY) {
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss");
+                    TemporalAccessor accessor = formatter.parse(matcher.group());
+                    System.out.printf(matcher.group());
+                    LocalDateTime from = LocalDateTime.from(accessor);
+                    Duration between = Duration.between(LocalDateTime.now(), from);
+                    seconds = between.toSeconds();
+                    ScheduledExecutorService executor;
+                    executor = Executors.newScheduledThreadPool(4);
+                    executor.scheduleAtFixedRate(() -> {
+                        try {
+                            bot.execute(new SendMessage(message.getChatId().toString(), "You have reminder : " + message.getText()));
+                        } catch (TelegramApiException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }, seconds, 3600 * period, TimeUnit.SECONDS);
+                }
             }
-        }
     }
 
 }

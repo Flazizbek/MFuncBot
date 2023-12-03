@@ -9,11 +9,15 @@ import bot.multifunction.model.steps.Steps;
 import bot.multifunction.model.vocabluary.Reader;
 import bot.multifunction.model.vocabluary.VocabSwitchInfo;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.IOException;
+import java.util.Optional;
+
 
 
 public class CallBackQHandler {
@@ -76,22 +80,22 @@ public class CallBackQHandler {
     }
 
     private static void createOddReminder(CallbackQuery callbackQuery, TelegramLongPollingBot bot) throws TelegramApiException {
-        SendMessage sendMessage = new SendMessage(callbackQuery.getMessage().getChatId().toString(), "Select time.");
-        sendMessage.setReplyMarkup(ButtonUtil.TimeIncrement(callbackQuery.getMessage().getChatId()));
+        SendMessage sendMessage = new SendMessage(callbackQuery.getMessage().getChatId().toString(), "Select date(mm:dd).");
+        sendMessage.setReplyMarkup(ButtonUtil.DayButton(callbackQuery));
         bot.execute(sendMessage);
         UserRepo.USER_STEP.put(callbackQuery.getMessage().getChatId(), Steps.CREATING_ODD_DAYS_REMINDER);
     }
 
     private static void createEvenReminder(CallbackQuery callbackQuery, TelegramLongPollingBot bot) throws TelegramApiException {
-        SendMessage sendMessage = new SendMessage(callbackQuery.getMessage().getChatId().toString(), "Select time.");
-        sendMessage.setReplyMarkup(ButtonUtil.TimeIncrement(callbackQuery.getMessage().getChatId()));
+        SendMessage sendMessage = new SendMessage(callbackQuery.getMessage().getChatId().toString(), "Select date(mm:dd).");
+        sendMessage.setReplyMarkup(ButtonUtil.DayButton(callbackQuery));
         bot.execute(sendMessage);
         UserRepo.USER_STEP.put(callbackQuery.getMessage().getChatId(), Steps.CREATING_EVEN_DAYS_REMINDER);
     }
 
     private static void createEveryReminder(CallbackQuery callbackQuery, TelegramLongPollingBot bot) throws TelegramApiException {
-        SendMessage sendMessage = new SendMessage(callbackQuery.getMessage().getChatId().toString(), "Select time.");
-        sendMessage.setReplyMarkup(ButtonUtil.TimeIncrement(callbackQuery.getMessage().getChatId()));
+        SendMessage sendMessage = new SendMessage(callbackQuery.getMessage().getChatId().toString(), "Select date(mm:dd).");
+        sendMessage.setReplyMarkup(ButtonUtil.DayButton(callbackQuery));
         bot.execute(sendMessage);
         UserRepo.USER_STEP.put(callbackQuery.getMessage().getChatId(), Steps.CREATING_EVERYDAY_REMINDER);
     }
@@ -120,7 +124,7 @@ public class CallBackQHandler {
 
     private static void createOnceReminder(CallbackQuery callbackQuery, TelegramLongPollingBot bot) throws TelegramApiException {
         SendMessage sendMessage = new SendMessage(callbackQuery.getMessage().getChatId().toString(), "Select date(mm:dd).");
-        sendMessage.setReplyMarkup(ButtonUtil.DayButton(callbackQuery.getMessage().getChatId()));
+        sendMessage.setReplyMarkup(ButtonUtil.DayButton(callbackQuery));
         bot.execute(sendMessage);
         UserRepo.USER_STEP.put(callbackQuery.getMessage().getChatId(), Steps.CREATING_ONCE_REMINDER);
     }

@@ -15,4 +15,5 @@ public class UserRepo {
     public static Map<Long, TimeManager> TIME = new HashMap<>();
     public static Map<Long, DateManager> DATE = new HashMap<>();
     public static Map<Long, String> DATE_COLLECTOR = new HashMap<>();
+    public static Map<Long, Integer> MESSAGE_TO_DELETE = new HashMap<>();
 }

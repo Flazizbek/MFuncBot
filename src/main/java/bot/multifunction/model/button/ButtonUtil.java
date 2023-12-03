@@ -1,8 +1,8 @@
 package bot.multifunction.model.button;
 
 import bot.multifunction.model.Users.UserRepo;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import java.util.List;
@@ -78,8 +78,8 @@ public class ButtonUtil {
                 .build();
     }
 
-    public static InlineKeyboardMarkup DayButton(Long chatId) {
-        if (UserRepo.DATE.get(chatId) == null) {
+    public static InlineKeyboardMarkup DayButton(CallbackQuery callbackQuery) {
+        if (UserRepo.DATE.get(callbackQuery.getMessage().getChatId()) == null) {
             return InlineKeyboardMarkup.builder()
                     .keyboardRow(List.of(
                             InlineKeyboardButton.builder().text(String.valueOf(0)).callbackData("m").build(),
@@ -99,8 +99,8 @@ public class ButtonUtil {
         }
         return InlineKeyboardMarkup.builder()
                 .keyboardRow(List.of(
-                        InlineKeyboardButton.builder().text(String.valueOf(UserRepo.DATE.get(chatId).getMonth())).callbackData("m").build(),
-                        InlineKeyboardButton.builder().text(String.valueOf(UserRepo.DATE.get(chatId).getDay())).callbackData("d").build()
+                        InlineKeyboardButton.builder().text(String.valueOf(UserRepo.DATE.get(callbackQuery.getMessage().getChatId()).getMonth())).callbackData("m").build(),
+                        InlineKeyboardButton.builder().text(String.valueOf(UserRepo.DATE.get(callbackQuery.getMessage().getChatId()).getDay())).callbackData("d").build()
                 ))
                 .keyboardRow(List.of(
                         InlineKeyboardButton.builder().text("+").callbackData("month_increment").build(),

@@ -1,15 +1,19 @@
 package bot.multifunction.model.handlers.from_message;
 
 import bot.multifunction.model.CommandEnum;
+import bot.multifunction.model.Users.UserRepo;
 import bot.multifunction.model.button.ButtonUtil;
 import bot.multifunction.model.vocabluary.Reader;
 import lombok.SneakyThrows;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CommandHandler {
     @SneakyThrows
@@ -36,6 +40,7 @@ public class CommandHandler {
 
     @SneakyThrows
     public static void handleCommandStart(Message message, TelegramLongPollingBot bot) {
+
         bot.execute(new SendMessage(message.getChatId().toString(), "Welcome "+
                 message.getFrom().getUserName()));
         bot.execute(new SendMessage(message.getChatId().toString(),

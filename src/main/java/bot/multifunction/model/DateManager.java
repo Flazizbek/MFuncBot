@@ -29,7 +29,7 @@ public class DateManager {
 
         if (dateManager.getDay() < 31) {
             dateManager.setDay(dateManager.getDay() + 1);
-            InlineKeyboardMarkup markup =  ButtonUtil.DayButton(chatId);
+            InlineKeyboardMarkup markup =  ButtonUtil.DayButton(callbackQuery);
             EditMessageReplyMarkup editMessageReplyMarkup = EditMessageReplyMarkup.builder()
                     .replyMarkup(markup)
                     .chatId(callbackQuery.getMessage().getChatId())
@@ -39,7 +39,7 @@ public class DateManager {
         } else {
             dateManager.setDay(0);
 
-            InlineKeyboardMarkup markup =  ButtonUtil.DayButton(chatId);
+            InlineKeyboardMarkup markup =  ButtonUtil.DayButton(callbackQuery);
             EditMessageReplyMarkup editMessageReplyMarkup = EditMessageReplyMarkup.builder()
                     .replyMarkup(markup)
                     .chatId(callbackQuery.getMessage().getChatId())
@@ -58,7 +58,7 @@ public class DateManager {
 
         if (dateManager.getDay() != 0) {
             dateManager.setDay(dateManager.getDay() - 1);
-            InlineKeyboardMarkup markup =  ButtonUtil.DayButton(chatId);
+            InlineKeyboardMarkup markup =  ButtonUtil.DayButton(callbackQuery);
             EditMessageReplyMarkup editMessageReplyMarkup = EditMessageReplyMarkup.builder()
                     .replyMarkup(markup)
                     .chatId(callbackQuery.getMessage().getChatId())
@@ -72,7 +72,7 @@ public class DateManager {
             } else {
                 dateManager.setMonth(dateManager.getMonth() - 1);
             }
-            InlineKeyboardMarkup markup =  ButtonUtil.DayButton(chatId);
+            InlineKeyboardMarkup markup =  ButtonUtil.DayButton(callbackQuery);
             EditMessageReplyMarkup editMessageReplyMarkup = EditMessageReplyMarkup.builder()
                     .replyMarkup(markup)
                     .chatId(callbackQuery.getMessage().getChatId())
@@ -93,7 +93,7 @@ public class DateManager {
 
         if (dateManager.getMonth() != 12) {
             dateManager.setMonth(dateManager.getMonth() + 1);
-            InlineKeyboardMarkup markup =  ButtonUtil.DayButton(chatId);
+            InlineKeyboardMarkup markup =  ButtonUtil.DayButton(callbackQuery);
             EditMessageReplyMarkup editMessageReplyMarkup = EditMessageReplyMarkup.builder()
                     .replyMarkup(markup)
                     .chatId(callbackQuery.getMessage().getChatId())
@@ -102,7 +102,7 @@ public class DateManager {
             bot.execute(editMessageReplyMarkup);
         } else {
             dateManager.setMonth(0);
-            InlineKeyboardMarkup markup =  ButtonUtil.DayButton(chatId);
+            InlineKeyboardMarkup markup =  ButtonUtil.DayButton(callbackQuery);
             EditMessageReplyMarkup editMessageReplyMarkup = EditMessageReplyMarkup.builder()
                     .replyMarkup(markup)
                     .chatId(callbackQuery.getMessage().getChatId())
@@ -120,7 +120,7 @@ public class DateManager {
 
         if (dateManager.getMonth() != 0) {
             dateManager.setMonth(dateManager.getMonth() - 1);
-            InlineKeyboardMarkup markup =  ButtonUtil.DayButton(chatId);
+            InlineKeyboardMarkup markup =  ButtonUtil.DayButton(callbackQuery);
             EditMessageReplyMarkup editMessageReplyMarkup = EditMessageReplyMarkup.builder()
                     .replyMarkup(markup)
                     .chatId(callbackQuery.getMessage().getChatId())
@@ -129,7 +129,7 @@ public class DateManager {
             bot.execute(editMessageReplyMarkup);
         } else {
             dateManager.setMonth(12);
-            InlineKeyboardMarkup markup = ButtonUtil.DayButton(chatId);
+            InlineKeyboardMarkup markup = ButtonUtil.DayButton(callbackQuery);
             EditMessageReplyMarkup editMessageReplyMarkup = EditMessageReplyMarkup.builder()
                     .replyMarkup(markup)
                     .chatId(callbackQuery.getMessage().getChatId())
