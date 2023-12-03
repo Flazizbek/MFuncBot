@@ -21,10 +21,10 @@ import java.util.regex.Pattern;
 
 public class TextHandler {
     static Pattern pattern = Pattern.compile("\\d{2}-\\d{2}-\\d{4} \\d{2}:\\d{2}:\\d{2}");
-    static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+    static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss");
     static  LocalDate currentDate = LocalDate.now();
     static  DayOfWeek currentDayOfWeek = currentDate.getDayOfWeek();
-    public static void handle(Message message, TelegramLongPollingBot bot) {
+    public static void handle(Message message, TelegramLongPollingBot bot) throws TelegramApiException {
         if(UserRepo.USER_STEP.get(message.getChatId())== Steps.CREATING_ONCE_REMINDER){
             creatingReminder(message,bot,1_000_000);
         } else if (UserRepo.USER_STEP.get(message.getChatId())== Steps.CREATING_EVERYDAY_REMINDER) {
@@ -34,14 +34,19 @@ public class TextHandler {
         }else if (UserRepo.USER_STEP.get(message.getChatId())== Steps.CREATING_ODD_DAYS_REMINDER) {
             creatingOddReminder(message,bot,24);
         }
-
     }
 
-    private static void creatingReminder(Message message, TelegramLongPollingBot bot, long period) {
-        Matcher matcher = pattern.matcher(UserRepo.DATE_COLLECTOR.get(message.getChatId()));
-        long seconds=0;
-        if(matcher.find()) {
+
+
+    private static void creatingReminder(Message message, TelegramLongPollingBot bot, long period) throws TelegramApiException {
+        String time = UserRepo.DATE_COLLECTOR.get(message.getChatId());
+        Pattern pattern = Pattern.compile("(\\d{2}/\\d{2}/\\d{4} \\d{2}:\\d{2}:\\d{2})");
+        Matcher matcher = pattern.matcher(time);
+        long seconds = 0;
+        if (matcher.find()) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss");
             TemporalAccessor accessor = formatter.parse(matcher.group());
+            System.out.printf(matcher.group());
             LocalDateTime from = LocalDateTime.from(accessor);
             Duration between = Duration.between(LocalDateTime.now(), from);
             seconds = between.toSeconds();
@@ -49,13 +54,14 @@ public class TextHandler {
             executor = Executors.newScheduledThreadPool(4);
             executor.scheduleAtFixedRate(() -> {
                 try {
-                    bot.execute(new SendMessage(message.getChatId().toString(), "You have one reminder : " + message.getText()));
+                    bot.execute(new SendMessage(message.getChatId().toString(),"You have reminder : "+message.getText()));
                 } catch (TelegramApiException e) {
                     throw new RuntimeException(e);
                 }
-            }, seconds, 3600 * period, TimeUnit.SECONDS);
+            }, seconds, 60 * 5, TimeUnit.SECONDS);
         }
     }
+
 
     private static void creatingEvenReminder(Message message, TelegramLongPollingBot bot, long period) {
         Matcher matcher = pattern.matcher(UserRepo.DATE_COLLECTOR.get(message.getChatId()));
@@ -85,7 +91,6 @@ public class TextHandler {
         long seconds=0;
         if(matcher.find()) {
             if (currentDayOfWeek == DayOfWeek.MONDAY || currentDayOfWeek == DayOfWeek.WEDNESDAY || currentDayOfWeek == DayOfWeek.FRIDAY) {
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
                 TemporalAccessor accessor = formatter.parse(matcher.group());
                 LocalDateTime from = LocalDateTime.from(accessor);
                 Duration between = Duration.between(LocalDateTime.now(), from);

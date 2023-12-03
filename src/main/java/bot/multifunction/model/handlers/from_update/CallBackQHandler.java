@@ -11,13 +11,10 @@ import bot.multifunction.model.vocabluary.VocabSwitchInfo;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
-import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Stack;
+
 
 public class CallBackQHandler {
 
@@ -30,8 +27,7 @@ public class CallBackQHandler {
             case "every" -> createEveryReminder(callbackQuery, bot);
             case "even" -> createEvenReminder(callbackQuery, bot);
             case "odd" -> createOddReminder(callbackQuery, bot);
-            case "cansel" ->
-                    bot.execute(new SendMessage(callbackQuery.getMessage().getChatId().toString(), "Cancelled"));
+            case "cansel" -> bot.execute(new SendMessage(callbackQuery.getMessage().getChatId().toString(), "Cancelled"));
             case "hour_increment" -> TimeManager.hourIncrement(callbackQuery, bot);
             case "hour_decrement" -> TimeManager.hourDecrement(callbackQuery, bot);
             case "minute_increment" -> TimeManager.minuteIncrement(callbackQuery, bot);
@@ -52,12 +48,12 @@ public class CallBackQHandler {
         int day = dateManager.getDay();
         String monthString = (month < 10) ? "0" + month : String.valueOf(month);
         String dayeString = (day < 10) ? "0" + day : String.valueOf(day);
-        String result = monthString+":"+dayeString+":2023";
+        String result = monthString+"/"+dayeString+"/2023";
         UserRepo.DATE_COLLECTOR.put(chatId,result);
         dateManager.setMonth(0);
         dateManager.setDay(0);
         SendMessage sendMessage = new SendMessage(chatId.toString(), "Select time.");
-        sendMessage.setReplyMarkup(ButtonUtil.DayButton(chatId));
+        sendMessage.setReplyMarkup(ButtonUtil.TimeIncrement(chatId));
         bot.execute(sendMessage);
 
     }
@@ -70,7 +66,7 @@ public class CallBackQHandler {
         int minute = timeManager.getMinute();
         String hourString = (hour < 10) ? "0" + hour : String.valueOf(hour);
         String minuteString = (minute < 10) ? "0" + minute : String.valueOf(minute);
-        String result = hour+":"+minute+":00";
+        String result = hourString+":"+minuteString+":00";
         UserRepo.DATE_COLLECTOR.put(chatId, UserRepo.DATE_COLLECTOR.get(chatId)+" "+result);
         timeManager.setHour(0);
         timeManager.setMinute(0);

@@ -130,7 +130,7 @@ public class TimeManager {
             bot.execute(editMessageReplyMarkup);
         } else {
             timeManager.setHour(0);
-            InlineKeyboardMarkup markup = ButtonUtil.TimeIncrement(chatId);
+            InlineKeyboardMarkup markup =ButtonUtil.TimeIncrement(chatId);
             EditMessageReplyMarkup editMessageReplyMarkup = EditMessageReplyMarkup.builder()
                     .replyMarkup(markup)
                     .chatId(callbackQuery.getMessage().getChatId())

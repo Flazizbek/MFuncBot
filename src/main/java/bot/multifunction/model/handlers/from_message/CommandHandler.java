@@ -46,7 +46,7 @@ public class CommandHandler {
         bot.execute(new SendMessage(message.getChatId().toString(),
                 """
          What can do this bot?
-         This bot can remind you of everything at a certain time that you entered.\\n" +
+         This bot can remind you of everything at a certain time that you entered." +
          It will also help you learn foreign languages with notifications and giv everyday advices."""));
     }
 

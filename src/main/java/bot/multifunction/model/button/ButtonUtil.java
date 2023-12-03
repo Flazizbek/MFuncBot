@@ -78,7 +78,7 @@ public class ButtonUtil {
                 .build();
     }
 
-    public static ReplyKeyboard DayButton(Long chatId) {
+    public static InlineKeyboardMarkup DayButton(Long chatId) {
         if (UserRepo.DATE.get(chatId) == null) {
             return InlineKeyboardMarkup.builder()
                     .keyboardRow(List.of(
@@ -103,10 +103,10 @@ public class ButtonUtil {
                         InlineKeyboardButton.builder().text(String.valueOf(UserRepo.DATE.get(chatId).getDay())).callbackData("d").build()
                 ))
                 .keyboardRow(List.of(
-                        InlineKeyboardButton.builder().text("+").callbackData("hour_increment").build(),
-                        InlineKeyboardButton.builder().text("-").callbackData("hour_decrement").build(),
-                        InlineKeyboardButton.builder().text("+").callbackData("minute_increment").build(),
-                        InlineKeyboardButton.builder().text("-").callbackData("minute_decrement").build()
+                        InlineKeyboardButton.builder().text("+").callbackData("month_increment").build(),
+                        InlineKeyboardButton.builder().text("-").callbackData("month_decrement").build(),
+                        InlineKeyboardButton.builder().text("+").callbackData("day_increment").build(),
+                        InlineKeyboardButton.builder().text("-").callbackData("day_decrement").build()
                 ))
                 .keyboardRow(List.of(
                         InlineKeyboardButton.builder().text("Apply").callbackData("apply_day").build(),
