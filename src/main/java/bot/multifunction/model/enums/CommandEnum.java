@@ -1,4 +1,4 @@
-package bot.multifunction.model;
+package bot.multifunction.model.enums;
 
 import lombok.Getter;
 
@@ -16,15 +16,14 @@ public enum CommandEnum {
 
     ADD_REMAINDER("/add_reminder"),
 
-    EDIT_REMAINDER("/edit_reminder"),
-
-    DELETE_REMAINDER("/delete_reminder"),
-
     VOCAB("/vocabulary"),
 
     LANGUAGES("/languages"),
 
-    GET_RANDOM_WORD("/get_random_word");
+    GET_RANDOM_WORD("/get_random_word"),
+
+    SET_LOCATION ("/set_location") ;
+
 
     private final String value;
 

@@ -1,19 +1,17 @@
 package bot.multifunction.model.handlers.from_message;
 
-import bot.multifunction.model.CommandEnum;
 import bot.multifunction.model.Users.UserRepo;
+import bot.multifunction.model.enums.CommandEnum;
 import bot.multifunction.model.button.ButtonUtil;
+import bot.multifunction.model.enums.steps.Steps;
 import bot.multifunction.model.vocabluary.Reader;
 import lombok.SneakyThrows;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class CommandHandler {
     @SneakyThrows
@@ -25,17 +23,18 @@ public class CommandHandler {
 
             case ADD_REMAINDER -> handleCommandAddReminder(message, bot);
 
-            case EDIT_REMAINDER -> handleCommandEditReminder(message, bot);
-
-            case DELETE_REMAINDER -> handleCommandDeleteReminder(message, bot);
-
             case VOCAB -> handleCommandSwitchVocab(message, bot);
-
-            case LANGUAGES -> handleCommandLanguages(message, bot);
 
             case GET_RANDOM_WORD -> handleCommandGetRandomWord(message, bot);
 
+            case SET_LOCATION -> handleSetLocation(message, bot);
+
         }
+    }
+
+    private static void handleSetLocation(Message message, TelegramLongPollingBot bot) throws TelegramApiException {
+        bot.execute(new SendMessage(message.getChatId().toString(),"Send Location go get exact Weather news "));
+        UserRepo.USER_STEP.put(message.getChatId(), Steps.SET_LOCATION);
     }
 
     @SneakyThrows
@@ -62,11 +61,6 @@ public class CommandHandler {
         bot.execute(sendMessage);
     }
 
-    public static void handleCommandEditReminder(Message message, TelegramLongPollingBot bot) {
-    }
-
-    public static void handleCommandDeleteReminder(Message message, TelegramLongPollingBot bot) {
-    }
 
     public static void handleCommandSwitchVocab(Message message, TelegramLongPollingBot bot) throws TelegramApiException {
         SendMessage sendMessage = new SendMessage(message.getChatId().toString(), "On/of?");
@@ -74,11 +68,9 @@ public class CommandHandler {
         bot.execute(sendMessage);
     }
 
-    public static void handleCommandLanguages(Message message, TelegramLongPollingBot bot) {
-    }
 
     public static void handleCommandGetRandomWord(Message message, TelegramLongPollingBot bot) throws IOException, TelegramApiException {
-        bot.execute(new SendMessage(message.getChatId().toString(), new Reader().giveWord()));
+        bot.execute(new SendMessage(message.getChatId().toString(), new Reader().giveWord(message,bot)));
     }
 
 

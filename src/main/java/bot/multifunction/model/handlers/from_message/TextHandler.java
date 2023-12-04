@@ -1,7 +1,7 @@
 package bot.multifunction.model.handlers.from_message;
 
 import bot.multifunction.model.Users.UserRepo;
-import bot.multifunction.model.steps.Steps;
+import bot.multifunction.model.enums.steps.Steps;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;

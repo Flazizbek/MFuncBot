@@ -1,23 +1,19 @@
 package bot.multifunction.model.handlers.from_update;
 
 
-import bot.multifunction.model.DateManager;
-import bot.multifunction.model.TimeManager;
+import bot.multifunction.model.date_manage.DateManager;
+import bot.multifunction.model.date_manage.TimeManager;
 import bot.multifunction.model.Users.UserRepo;
 import bot.multifunction.model.button.ButtonUtil;
-import bot.multifunction.model.steps.Steps;
+import bot.multifunction.model.enums.steps.Steps;
 import bot.multifunction.model.vocabluary.Reader;
 import bot.multifunction.model.vocabluary.VocabSwitchInfo;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.IOException;
-import java.util.Optional;
-
 
 
 public class CallBackQHandler {
@@ -25,13 +21,16 @@ public class CallBackQHandler {
     public static void handle(CallbackQuery callbackQuery, TelegramLongPollingBot bot) throws IOException, TelegramApiException {
         String data = callbackQuery.getData();
         switch (data) {
+            //Language
             case "on" -> turnOn(callbackQuery, bot);
             case "off" -> turnOff(callbackQuery, bot);
+            //Reminder
             case "once" -> createOnceReminder(callbackQuery, bot);
             case "every" -> createEveryReminder(callbackQuery, bot);
             case "even" -> createEvenReminder(callbackQuery, bot);
             case "odd" -> createOddReminder(callbackQuery, bot);
             case "cansel" -> bot.execute(new SendMessage(callbackQuery.getMessage().getChatId().toString(), "Cancelled"));
+            //Time
             case "hour_increment" -> TimeManager.hourIncrement(callbackQuery, bot);
             case "hour_decrement" -> TimeManager.hourDecrement(callbackQuery, bot);
             case "minute_increment" -> TimeManager.minuteIncrement(callbackQuery, bot);
@@ -102,9 +101,8 @@ public class CallBackQHandler {
 
 
     private static void turnOn(CallbackQuery callbackQuery, TelegramLongPollingBot bot) throws IOException, TelegramApiException {
-        if (UserRepo.VOCAB_SWITCH_INFO.get(callbackQuery.getMessage().getChatId()) == null ||
-                UserRepo.VOCAB_SWITCH_INFO.get(callbackQuery.getMessage().getChatId()) == VocabSwitchInfo.OFF) {
-            bot.execute(new SendMessage(callbackQuery.getMessage().getChatId().toString(), new Reader().giveWord()));
+        if (UserRepo.VOCAB_SWITCH_INFO.get(callbackQuery.getMessage().getChatId()) == null || UserRepo.VOCAB_SWITCH_INFO.get(callbackQuery.getMessage().getChatId()) == VocabSwitchInfo.OFF) {
+            new Reader().giveWordRegular(callbackQuery.getMessage(), bot);
             UserRepo.VOCAB_SWITCH_INFO.put(callbackQuery.getMessage().getChatId(), VocabSwitchInfo.ON);
         } else if (UserRepo.VOCAB_SWITCH_INFO.get(callbackQuery.getMessage().getChatId()) == VocabSwitchInfo.ON) {
             bot.execute(new SendMessage(callbackQuery.getMessage().getChatId().toString(), "It is already ON"));

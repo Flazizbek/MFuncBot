@@ -1,4 +1,4 @@
-package bot.multifunction.model;
+package bot.multifunction.model.date_manage;
 
 import bot.multifunction.model.Users.UserRepo;
 import bot.multifunction.model.button.ButtonUtil;
@@ -16,20 +16,20 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 @AllArgsConstructor
 @Data
 @ToString
-public class TimeManager {
-    private int hour =0;
-    private int minute=0;
+public class DateManager {
+   private int month = 0;
+   private int day = 0;
 
-    public static void minuteDecrement(CallbackQuery callbackQuery, TelegramLongPollingBot bot) throws TelegramApiException {
+    public static void dayIncrement(CallbackQuery callbackQuery, TelegramLongPollingBot bot) throws TelegramApiException {
         Long chatId = callbackQuery.getMessage().getChatId();
-        if (!UserRepo.TIME.containsKey(chatId)) {
-            UserRepo.TIME.put(chatId, new TimeManager());
+        if (!UserRepo.DATE.containsKey(chatId)) {
+            UserRepo.DATE.put(chatId, new DateManager());
         }
-        TimeManager timeManager = UserRepo.TIME.get(chatId);
+        DateManager dateManager= UserRepo.DATE.get(chatId);
 
-        if (timeManager.getMinute() != 0) {
-            timeManager.setMinute(timeManager.getMinute() - 2);
-            InlineKeyboardMarkup markup = ButtonUtil.TimeIncrement(chatId);
+        if (dateManager.getDay() < 31) {
+            dateManager.setDay(dateManager.getDay() + 1);
+            InlineKeyboardMarkup markup =  ButtonUtil.DayButton(callbackQuery);
             EditMessageReplyMarkup editMessageReplyMarkup = EditMessageReplyMarkup.builder()
                     .replyMarkup(markup)
                     .chatId(callbackQuery.getMessage().getChatId())
@@ -37,13 +37,42 @@ public class TimeManager {
                     .build();
             bot.execute(editMessageReplyMarkup);
         } else {
-            timeManager.setMinute(58);
-            if (timeManager.getHour() == 0) {
-                timeManager.setHour(23);
+            dateManager.setDay(0);
+
+            InlineKeyboardMarkup markup =  ButtonUtil.DayButton(callbackQuery);
+            EditMessageReplyMarkup editMessageReplyMarkup = EditMessageReplyMarkup.builder()
+                    .replyMarkup(markup)
+                    .chatId(callbackQuery.getMessage().getChatId())
+                    .messageId(callbackQuery.getMessage().getMessageId())
+                    .build();
+            bot.execute(editMessageReplyMarkup);
+        }
+    }
+
+    public static void dayDecrement(CallbackQuery callbackQuery, TelegramLongPollingBot bot) throws TelegramApiException {
+        Long chatId = callbackQuery.getMessage().getChatId();
+        if (!UserRepo.DATE.containsKey(chatId)) {
+            UserRepo.DATE.put(chatId, new DateManager());
+        }
+        DateManager dateManager= UserRepo.DATE.get(chatId);
+
+        if (dateManager.getDay() != 0) {
+            dateManager.setDay(dateManager.getDay() - 1);
+            InlineKeyboardMarkup markup =  ButtonUtil.DayButton(callbackQuery);
+            EditMessageReplyMarkup editMessageReplyMarkup = EditMessageReplyMarkup.builder()
+                    .replyMarkup(markup)
+                    .chatId(callbackQuery.getMessage().getChatId())
+                    .messageId(callbackQuery.getMessage().getMessageId())
+                    .build();
+            bot.execute(editMessageReplyMarkup);
+        } else {
+            dateManager.setDay(31);
+            if (dateManager.getMonth() == 0) {
+                dateManager.setMonth(12);
             } else {
-                timeManager.setHour(timeManager.getHour() - 1);
+                dateManager.setMonth(dateManager.getMonth() - 1);
             }
-            InlineKeyboardMarkup markup = ButtonUtil.TimeIncrement(chatId);
+            InlineKeyboardMarkup markup =  ButtonUtil.DayButton(callbackQuery);
             EditMessageReplyMarkup editMessageReplyMarkup = EditMessageReplyMarkup.builder()
                     .replyMarkup(markup)
                     .chatId(callbackQuery.getMessage().getChatId())
@@ -53,16 +82,18 @@ public class TimeManager {
         }
     }
 
-    public static void minuteIncrement(CallbackQuery callbackQuery, TelegramLongPollingBot bot) throws TelegramApiException {
-        Long chatId = callbackQuery.getMessage().getChatId();
-        if (!UserRepo.TIME.containsKey(chatId)) {
-            UserRepo.TIME.put(chatId, new TimeManager());
-        }
-        TimeManager timeManager = UserRepo.TIME.get(chatId);
 
-        if (timeManager.getMinute() < 60) {
-            timeManager.setMinute(timeManager.getMinute() + 2);
-            InlineKeyboardMarkup markup = ButtonUtil.TimeIncrement(chatId);
+
+    public static void monthIncrement(CallbackQuery callbackQuery, TelegramLongPollingBot bot) throws TelegramApiException {
+        Long chatId = callbackQuery.getMessage().getChatId();
+        if (!UserRepo.DATE.containsKey(chatId)) {
+            UserRepo.DATE.put(chatId, new DateManager());
+        }
+        DateManager dateManager= UserRepo.DATE.get(chatId);
+
+        if (dateManager.getMonth() != 12) {
+            dateManager.setMonth(dateManager.getMonth() + 1);
+            InlineKeyboardMarkup markup =  ButtonUtil.DayButton(callbackQuery);
             EditMessageReplyMarkup editMessageReplyMarkup = EditMessageReplyMarkup.builder()
                     .replyMarkup(markup)
                     .chatId(callbackQuery.getMessage().getChatId())
@@ -70,9 +101,8 @@ public class TimeManager {
                     .build();
             bot.execute(editMessageReplyMarkup);
         } else {
-            timeManager.setMinute(0);
-
-            InlineKeyboardMarkup markup = ButtonUtil.TimeIncrement(chatId);
+            dateManager.setMonth(0);
+            InlineKeyboardMarkup markup =  ButtonUtil.DayButton(callbackQuery);
             EditMessageReplyMarkup editMessageReplyMarkup = EditMessageReplyMarkup.builder()
                     .replyMarkup(markup)
                     .chatId(callbackQuery.getMessage().getChatId())
@@ -81,18 +111,16 @@ public class TimeManager {
             bot.execute(editMessageReplyMarkup);
         }
     }
-
-
-    public static void hourDecrement(CallbackQuery callbackQuery, TelegramLongPollingBot bot) throws TelegramApiException {
+    public static void monthDecrement(CallbackQuery callbackQuery, TelegramLongPollingBot bot) throws TelegramApiException {
         Long chatId = callbackQuery.getMessage().getChatId();
-        if (!UserRepo.TIME.containsKey(chatId)) {
-            UserRepo.TIME.put(chatId, new TimeManager());
+        if (!UserRepo.DATE.containsKey(chatId)) {
+            UserRepo.DATE.put(chatId, new DateManager());
         }
-        TimeManager timeManager = UserRepo.TIME.get(chatId);
+        DateManager dateManager= UserRepo.DATE.get(chatId);
 
-        if (timeManager.getHour() != 0) {
-            timeManager.setHour(timeManager.getHour() - 1);
-            InlineKeyboardMarkup markup = ButtonUtil.TimeIncrement(chatId);
+        if (dateManager.getMonth() != 0) {
+            dateManager.setMonth(dateManager.getMonth() - 1);
+            InlineKeyboardMarkup markup =  ButtonUtil.DayButton(callbackQuery);
             EditMessageReplyMarkup editMessageReplyMarkup = EditMessageReplyMarkup.builder()
                     .replyMarkup(markup)
                     .chatId(callbackQuery.getMessage().getChatId())
@@ -100,8 +128,8 @@ public class TimeManager {
                     .build();
             bot.execute(editMessageReplyMarkup);
         } else {
-            timeManager.setHour(23);
-            InlineKeyboardMarkup markup = ButtonUtil.TimeIncrement(chatId);
+            dateManager.setMonth(12);
+            InlineKeyboardMarkup markup = ButtonUtil.DayButton(callbackQuery);
             EditMessageReplyMarkup editMessageReplyMarkup = EditMessageReplyMarkup.builder()
                     .replyMarkup(markup)
                     .chatId(callbackQuery.getMessage().getChatId())
@@ -111,33 +139,5 @@ public class TimeManager {
         }
     }
 
-
-    public static void hourIncrement(CallbackQuery callbackQuery, TelegramLongPollingBot bot) throws TelegramApiException {
-        Long chatId = callbackQuery.getMessage().getChatId();
-        if (!UserRepo.TIME.containsKey(chatId)) {
-            UserRepo.TIME.put(chatId, new TimeManager());
-        }
-        TimeManager timeManager = UserRepo.TIME.get(chatId);
-
-        if (timeManager.getHour() != 23) {
-            timeManager.setHour(timeManager.getHour() + 1);
-            InlineKeyboardMarkup markup = ButtonUtil.TimeIncrement(chatId);
-            EditMessageReplyMarkup editMessageReplyMarkup = EditMessageReplyMarkup.builder()
-                    .replyMarkup(markup)
-                    .chatId(callbackQuery.getMessage().getChatId())
-                    .messageId(callbackQuery.getMessage().getMessageId())
-                    .build();
-            bot.execute(editMessageReplyMarkup);
-        } else {
-            timeManager.setHour(0);
-            InlineKeyboardMarkup markup =ButtonUtil.TimeIncrement(chatId);
-            EditMessageReplyMarkup editMessageReplyMarkup = EditMessageReplyMarkup.builder()
-                    .replyMarkup(markup)
-                    .chatId(callbackQuery.getMessage().getChatId())
-                    .messageId(callbackQuery.getMessage().getMessageId())
-                    .build();
-            bot.execute(editMessageReplyMarkup);
-        }
-    }
 
 }
