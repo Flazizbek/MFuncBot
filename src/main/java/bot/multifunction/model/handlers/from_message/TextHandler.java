@@ -46,7 +46,6 @@ public class TextHandler {
         if (matcher.find()) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss");
             TemporalAccessor accessor = formatter.parse(matcher.group());
-            System.out.printf(matcher.group());
             LocalDateTime from = LocalDateTime.from(accessor);
             Duration between = Duration.between(LocalDateTime.now(), from);
             seconds = between.toSeconds();
