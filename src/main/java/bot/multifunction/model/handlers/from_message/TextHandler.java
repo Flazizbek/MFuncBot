@@ -82,6 +82,7 @@ public class TextHandler {
                             bot.execute(new SendMessage(message.getChatId().toString(), "You have reminder : " + message.getText()));
                         } catch (TelegramApiException e) {
                             throw new RuntimeException(e);
+
                         }
                     }, seconds, 3600 * period, TimeUnit.SECONDS);
                 }

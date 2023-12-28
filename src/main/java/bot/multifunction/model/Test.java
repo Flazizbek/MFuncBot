@@ -1,33 +1,33 @@
 package bot.multifunction.model;
 
-import bot.multifunction.model.weather_classes.Weather;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-
+import java.util.Calendar;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Test {
-    public static void main(String[] args) throws IOException, InterruptedException {
 
-        HttpRequest request = HttpRequest
-                .newBuilder()
-                .uri(URI.create("https://api.openweathermap.org/data/2.5/weather?q=Tashkent&appid=4f39792662de8d7ad953002ccfe7310d"))
-                .GET()
-                .build();
-        HttpResponse<String> response = HttpClient.newHttpClient()
-                .send(request, HttpResponse.BodyHandlers.ofString());
-        String body = response.body();
+    public static void main(String[] args) {
+        // Create a timer
+        Timer timer = new Timer();
 
-        Gson gson = new GsonBuilder().create();
+        // Get the current date and time
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 5); // Set the hour to 5
+        calendar.set(Calendar.MINUTE, 0);      // Set the minute to 0
+        calendar.set(Calendar.SECOND, 0);      // Set the second to 0
 
-        Weather weather = gson.fromJson(body, Weather.class);
+        // Schedule the task to run every day at 5:00
+        timer.scheduleAtFixedRate(new PrintTextTask(), calendar.getTime(), 24 * 60 * 60 * 1000); // 24 hours in milliseconds
+    }
 
+    static class PrintTextTask extends TimerTask {
+        @Override
+        public void run() {
+            // Replace this with the text you want to print
+            System.out.println("It's 5:00! Time to print some text.");
+        }
     }
 }
+
 
 

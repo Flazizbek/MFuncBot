@@ -10,6 +10,7 @@ import java.io.IOException;
 
 public class MessageHandler {
     public static void handle(Message message, TelegramLongPollingBot bot) throws TelegramApiException, IOException, InterruptedException {
+
         if(message.isCommand()) {
             CommandHandler.handle(message,bot);
         }

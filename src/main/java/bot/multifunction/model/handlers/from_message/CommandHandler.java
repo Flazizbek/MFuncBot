@@ -27,31 +27,52 @@ public class CommandHandler {
 
             case GET_RANDOM_WORD -> handleCommandGetRandomWord(message, bot);
 
-            case SET_LOCATION -> handleSetLocation(message, bot);
+            case GET_WEATHER_INFO -> handleGetWI(message, bot);
+
+            case ACTIVATE_EVERYDAY_WEATHER_INFO -> handleActivateEWI(message, bot);
+
+            case CHANGE_LOCATION -> handleChangeLocation(message, bot);
 
         }
     }
 
+    @SneakyThrows
+    private static void handleChangeLocation(Message message, TelegramLongPollingBot bot) {
+        bot.execute(new SendMessage(message.getChatId().toString(), "Send new location "));
+        bot.execute(new SendMessage(message.getChatId().toString(),message.getChatId().toString()));
+        UserRepo.USER_STEP.put(message.getChatId(), Steps.CHANGE_LOCATION);
+    }
+
+    private static void handleActivateEWI(Message message, TelegramLongPollingBot bot) {
+
+    }
+
+    private static void handleGetWI(Message message, TelegramLongPollingBot bot) {
+
+    }
+
     private static void handleSetLocation(Message message, TelegramLongPollingBot bot) throws TelegramApiException {
-        bot.execute(new SendMessage(message.getChatId().toString(),"Send Location go get exact Weather news "));
+        bot.execute(new SendMessage(message.getChatId().toString(), "Send Location go get exact Weather information "));
+
         UserRepo.USER_STEP.put(message.getChatId(), Steps.SET_LOCATION);
     }
 
     @SneakyThrows
     public static void handleCommandStart(Message message, TelegramLongPollingBot bot) {
 
-        bot.execute(new SendMessage(message.getChatId().toString(), "Welcome "+
+        bot.execute(new SendMessage(message.getChatId().toString(), "Welcome " +
                 message.getFrom().getUserName()));
         bot.execute(new SendMessage(message.getChatId().toString(),
                 "Send /help to get information about this bot. "));
     }
+
     @SneakyThrows
     public static void handleCommandHelp(Message message, TelegramLongPollingBot bot) {
         bot.execute(new SendMessage(message.getChatId().toString(),
                 """
-         What can do this bot?
-         This bot can remind you of everything at a certain time that you entered." +
-         It will also help you learn foreign languages with notifications and giv everyday advices."""));
+                        What can do this bot?
+                        This bot can remind you of everything at a certain time that you entered." +
+                        It will also help you learn foreign languages with notifications and giv everyday advices."""));
     }
 
 
@@ -70,7 +91,7 @@ public class CommandHandler {
 
 
     public static void handleCommandGetRandomWord(Message message, TelegramLongPollingBot bot) throws IOException, TelegramApiException {
-        bot.execute(new SendMessage(message.getChatId().toString(), new Reader().giveWord(message,bot)));
+        bot.execute(new SendMessage(message.getChatId().toString(), new Reader().giveWord(message, bot)));
     }
 
 

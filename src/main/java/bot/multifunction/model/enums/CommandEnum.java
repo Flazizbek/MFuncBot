@@ -22,7 +22,11 @@ public enum CommandEnum {
 
     GET_RANDOM_WORD("/get_random_word"),
 
-    SET_LOCATION ("/set_location") ;
+    GET_WEATHER_INFO("/get_weather_info"),
+
+    ACTIVATE_EVERYDAY_WEATHER_INFO("/activate_everyday_weather_info"),
+
+    CHANGE_LOCATION("/change_location");
 
 
     private final String value;

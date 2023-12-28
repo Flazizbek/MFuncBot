@@ -10,6 +10,7 @@ import java.io.IOException;
 
 public class UpdateHandler {
     public static void handle(final Update update, final TelegramLongPollingBot bot) throws TelegramApiException, IOException, InterruptedException {
+        System.out.println(update);
         if (update.hasMessage()){
             MessageHandler.handle(update.getMessage(),bot);
         } else if (update.hasCallbackQuery()) {
